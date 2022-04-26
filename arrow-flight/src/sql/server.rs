@@ -33,11 +33,9 @@ use super::{
     CommandGetPrimaryKeys, CommandGetSqlInfo, CommandGetTableTypes, CommandGetTables,
     CommandPreparedStatementQuery, CommandPreparedStatementUpdate, CommandStatementQuery,
     CommandStatementUpdate, DoPutUpdateResult, ProstAnyExt, ProstMessageExt, SqlInfo,
-    TicketStatementQuery,
+    TicketStatementQuery, ACTION_TYPE_CLOSE_PREPARED_STATEMENT,
+    ACTION_TYPE_CREATE_PREPARED_STATEMENT,
 };
-
-static CREATE_PREPARED_STATEMENT: &str = "CreatePreparedStatement";
-static CLOSE_PREPARED_STATEMENT: &str = "ClosePreparedStatement";
 
 /// Implements FlightSqlService to handle the flight sql protocol
 #[tonic::async_trait]
@@ -512,14 +510,14 @@ where
         _request: Request<Empty>,
     ) -> Result<Response<Self::ListActionsStream>, Status> {
         let create_prepared_statement_action_type = ActionType {
-            r#type: CREATE_PREPARED_STATEMENT.to_string(),
+            r#type: ACTION_TYPE_CREATE_PREPARED_STATEMENT.to_string(),
             description: "Creates a reusable prepared statement resource on the server.\n
                 Request Message: ActionCreatePreparedStatementRequest\n
                 Response Message: ActionCreatePreparedStatementResult"
                 .into(),
         };
         let close_prepared_statement_action_type = ActionType {
-            r#type: CLOSE_PREPARED_STATEMENT.to_string(),
+            r#type: ACTION_TYPE_CLOSE_PREPARED_STATEMENT.to_string(),
             description: "Closes a reusable prepared statement resource on the server.\n
                 Request Message: ActionClosePreparedStatementRequest\n
                 Response Message: N/A"
@@ -537,9 +535,11 @@ where
         &self,
         request: Request<Action>,
     ) -> Result<Response<Self::DoActionStream>, Status> {
-        if request.get_ref().r#type == CREATE_PREPARED_STATEMENT {
-            let any: prost_types::Any = Message::decode(&*request.get_ref().body)
-                .map_err(decode_error_to_status)?;
+        let request = request.into_inner();
+
+        if request.r#type == ACTION_TYPE_CREATE_PREPARED_STATEMENT {
+            let any: prost_types::Any =
+                prost::Message::decode(&*request.body).map_err(decode_error_to_status)?;
 
             let cmd: ActionCreatePreparedStatementRequest = any
                 .unpack()
@@ -557,9 +557,9 @@ where
             })]);
             return Ok(Response::new(Box::pin(output)));
         }
-        if request.get_ref().r#type == CLOSE_PREPARED_STATEMENT {
-            let any: prost_types::Any = Message::decode(&*request.get_ref().body)
-                .map_err(decode_error_to_status)?;
+        if request.r#type == ACTION_TYPE_CLOSE_PREPARED_STATEMENT {
+            let any: prost_types::Any =
+                prost::Message::decode(&*request.body).map_err(decode_error_to_status)?;
 
             let cmd: ActionClosePreparedStatementRequest = any
                 .unpack()
