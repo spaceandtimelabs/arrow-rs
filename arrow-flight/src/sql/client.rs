@@ -19,7 +19,7 @@ use std::cell::{RefCell, RefMut};
 use std::collections::HashMap;
 
 use arrow::{
-    buffer::{Buffer, MutableBuffer},
+    buffer::{Buffer},
     datatypes::{Schema, SchemaRef},
     error::{ArrowError, Result},
     ipc::{MessageHeader, RecordBatch},
@@ -503,14 +503,11 @@ pub fn arrow_data_from_flight_data(
 }
 
 #[cfg(test)]
-
 mod tests {
     use std::time::Duration;
     use super::*;
-    use log::{debug, error, warn};
+    use log::{debug};
     use tonic::transport::{Channel, Error};
-    //use tonic::codegen::*;
-    //use tonic::codegen::http::Uri;
 
     pub async fn create_grpc_client_connection<D>(
         dst: D,
@@ -530,11 +527,12 @@ mod tests {
             .keep_alive_while_idle(true);
         endpoint.connect().await
     }
-    pub struct FlightSQLClient<T> {
-        inner: FlightServiceClient<T>,
+
+    pub struct FlightSQLClient {
+        inner: FlightServiceClient<Channel>,
     }
-    impl <T> FlightSQLClient<T>
-    {
+
+    impl FlightSQLClient {
         /// Create a new BallistaClient to connect to the executor listening on the specified
         /// host and port
         pub async fn try_new_flight_client(host: &str, port: u16) -> Result<FlightServiceClient<Channel>>  {
@@ -549,18 +547,23 @@ mod tests {
                             addr, e
                         ))
                     })?;
-            let mut flight_client = FlightServiceClient::new(connection);
+            let flight_client = FlightServiceClient::new(connection);
             debug!("BallistaClient connected OK");
 
             Ok(flight_client)
         }
     }
-    #[test]
-    fn test_select_1() -> Result<()> {
+    
+    #[tokio::test]
+    async fn test_select_1() -> Result<()> {
         let host = "127.0.0.1";
-        let mut flight_client = FlightSQLClient::try_new_flight_client(host, 50050);
-        let mut client = FlightSqlServiceClient::new(flight_client) ;
-        let result = client.execute("select 1;".to_string());
+        let flight_client: FlightServiceClient<Channel> = FlightSQLClient::try_new_flight_client(host, 50050).await?;
+        let mut client = FlightSqlServiceClient::new(RefCell::new(flight_client));
+        let result = client.execute("select 1;".to_string()).await;
+
+        assert_eq!(result.is_ok(), true);
+
+        // TODO: assert data
 
         Ok(())
     }
