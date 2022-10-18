@@ -15,30 +15,28 @@
 // specific language governing permissions and limitations
 // under the License.
 
-use std::{
-    cell::{RefCell, RefMut},
-    pin::Pin,
-    sync::Arc,
-};
+use std::cell::{RefCell, RefMut};
+use std::collections::HashMap;
 
 use arrow::{
-    datatypes::Schema,
+    buffer::{Buffer, MutableBuffer},
+    datatypes::{Schema, SchemaRef},
     error::{ArrowError, Result},
-    ipc::RecordBatch,
+    ipc::{MessageHeader, RecordBatch},
 };
-use futures::{stream, Stream};
+
+use futures::stream;
 use prost::Message;
-use prost_types::Any;
 use tonic::{
     codegen::{Body, StdError},
     Streaming,
 };
 
 use crate::{
-    flight_descriptor, flight_service_client::FlightServiceClient,
-    flight_service_server::FlightService, Action, ActionType, FlightData,
-    FlightDescriptor, FlightInfo, IpcMessage, Ticket,
+    flight_service_client::FlightServiceClient, Action, FlightData, FlightDescriptor,
+    FlightInfo, IpcMessage, Ticket,
 };
+//use crate::sql::client::tests::try_new_flight_client;
 
 use super::{
     ActionClosePreparedStatementRequest, ActionCreatePreparedStatementRequest,
@@ -46,7 +44,7 @@ use super::{
     CommandGetDbSchemas, CommandGetExportedKeys, CommandGetImportedKeys,
     CommandGetPrimaryKeys, CommandGetSqlInfo, CommandGetTableTypes, CommandGetTables,
     CommandPreparedStatementQuery, CommandStatementQuery, CommandStatementUpdate,
-    DoPutUpdateResult, ProstAnyExt, ProstMessageExt, SqlInfo, TicketStatementQuery,
+    DoPutUpdateResult, ProstAnyExt, ProstMessageExt, SqlInfo,
     ACTION_TYPE_CLOSE_PREPARED_STATEMENT, ACTION_TYPE_CREATE_PREPARED_STATEMENT,
 };
 
@@ -60,8 +58,8 @@ pub struct FlightSqlServiceClient<T> {
 impl<T> FlightSqlServiceClient<T>
 where
     T: tonic::client::GrpcService<tonic::body::BoxBody>,
-    T::ResponseBody: Body + Send + 'static,
     T::Error: Into<StdError>,
+    T::ResponseBody: Default + Body<Data = bytes::Bytes> + Send + 'static,
     <T::ResponseBody as Body>::Error: Into<StdError> + Send,
 {
     /// create FlightSqlServiceClient using FlightServiceClient
@@ -78,12 +76,12 @@ where
         &mut self,
         cmd: M,
     ) -> Result<FlightInfo> {
-        let request =
-            tonic::Request::new(FlightDescriptor::new_cmd(cmd.as_any().encode_to_vec()));
+        let descriptor = FlightDescriptor::new_cmd(cmd.as_any().encode_to_vec());
         Ok(self
             .mut_client()
-            .get_flight_info(request)
-            .await?
+            .get_flight_info(descriptor)
+            .await
+            .map_err(status_to_arrow_error)?
             .into_inner())
     }
 
@@ -103,9 +101,14 @@ where
                 flight_descriptor: Some(descriptor),
                 ..Default::default()
             }]))
-            .await?
+            .await
+            .map_err(status_to_arrow_error)?
             .into_inner();
-        let result = result.message().await?.unwrap();
+        let result = result
+            .message()
+            .await
+            .map_err(status_to_arrow_error)?
+            .unwrap();
         let any: prost_types::Any = prost::Message::decode(&*result.app_metadata)
             .map_err(decode_error_to_arrow_error)?;
         let result: DoPutUpdateResult = any.unpack()?.unwrap();
@@ -128,16 +131,12 @@ where
 
     /// Given a flight ticket and schema, request to be sent the
     /// stream. Returns record batch stream reader
-    pub async fn do_get(
-        &mut self,
-        ticket: TicketStatementQuery,
-    ) -> Result<Streaming<FlightData>> {
+    pub async fn do_get(&mut self, ticket: Ticket) -> Result<Streaming<FlightData>> {
         Ok(self
             .mut_client()
-            .do_get(tonic::Request::new(Ticket {
-                ticket: ticket.statement_handle,
-            }))
-            .await?
+            .do_get(ticket)
+            .await
+            .map_err(status_to_arrow_error)?
             .into_inner())
     }
 
@@ -205,9 +204,14 @@ where
         let mut result = self
             .mut_client()
             .do_action(tonic::Request::new(action))
-            .await?
+            .await
+            .map_err(status_to_arrow_error)?
             .into_inner();
-        let result = result.message().await?.unwrap();
+        let result = result
+            .message()
+            .await
+            .map_err(status_to_arrow_error)?
+            .unwrap();
         let any: prost_types::Any =
             prost::Message::decode(&*result.body).map_err(decode_error_to_arrow_error)?;
         let prepared_result: ActionCreatePreparedStatementResult = any.unpack()?.unwrap();
@@ -243,8 +247,8 @@ pub struct PreparedStatement<'a, T> {
 impl<'a, T> PreparedStatement<'a, T>
 where
     T: tonic::client::GrpcService<tonic::body::BoxBody>,
-    T::ResponseBody: Body + Send + 'static,
     T::Error: Into<StdError>,
+    T::ResponseBody: Default + Body<Data = bytes::Bytes> + Send + 'static,
     <T::ResponseBody as Body>::Error: Into<StdError> + Send,
 {
     pub(crate) fn new(
@@ -279,10 +283,15 @@ where
                 flight_descriptor: Some(descriptor),
                 ..Default::default()
             }]))
-            .await?
+            .await
+            .map_err(status_to_arrow_error)?
             .into_inner();
-        let result = result.message().await?.unwrap();
-        let any: prost_types::Any = prost::Message::decode(&*result.app_metadata)
+        let result = result
+            .message()
+            .await
+            .map_err(status_to_arrow_error)?
+            .unwrap();
+        let _: prost_types::Any = prost::Message::decode(&*result.app_metadata)
             .map_err(decode_error_to_arrow_error)?;
         Err(ArrowError::NotYetImplemented(
             "Not yet implemented".to_string(),
@@ -306,9 +315,14 @@ where
                 flight_descriptor: Some(descriptor),
                 ..Default::default()
             }]))
-            .await?
+            .await
+            .map_err(status_to_arrow_error)?
             .into_inner();
-        let result = result.message().await?.unwrap();
+        let result = result
+            .message()
+            .await
+            .map_err(status_to_arrow_error)?
+            .unwrap();
         let any: prost_types::Any = prost::Message::decode(&*result.app_metadata)
             .map_err(decode_error_to_arrow_error)?;
         let result: DoPutUpdateResult = any.unpack()?.unwrap();
@@ -351,8 +365,9 @@ where
         };
         let _ = self
             .mut_client()
-            .do_action(tonic::Request::new(action))
-            .await?;
+            .do_action(action)
+            .await
+            .map_err(status_to_arrow_error)?;
         self.is_closed = true;
         Ok(())
     }
@@ -368,6 +383,186 @@ where
     }
 }
 
-fn decode_error_to_arrow_error(err: prost::DecodeError) -> ArrowError {
+pub fn decode_error_to_arrow_error(err: prost::DecodeError) -> ArrowError {
     ArrowError::IoError(err.to_string())
 }
+
+pub fn arrow_error_to_status(err: arrow::error::ArrowError) -> tonic::Status {
+    tonic::Status::internal(format!("{:?}", err))
+}
+
+pub fn status_to_arrow_error(status: tonic::Status) -> ArrowError {
+    ArrowError::TonicRequestError(format!("{:?}", status))
+}
+
+pub fn transport_error_to_arrow_erorr(error: tonic::transport::Error) -> ArrowError {
+    ArrowError::TonicRequestError(format!("{}", error))
+}
+
+pub fn arrow_schema_from_flight_info(fi: &FlightInfo) -> Result<Schema> {
+    let ipc_message = arrow::ipc::size_prefixed_root_as_message(&fi.schema[4..])
+        .map_err(|e| ArrowError::ComputeError(format!("{:?}", e)))?;
+
+    let ipc_schema = ipc_message
+        .header_as_schema()
+        .ok_or(ArrowError::ComputeError(
+            "failed to get schema...".to_string(),
+        ))?;
+
+    let arrow_schema = arrow::ipc::convert::fb_to_schema(ipc_schema);
+
+    Ok(arrow_schema)
+}
+
+pub enum ArrowFlightData {
+    RecordBatch(arrow::record_batch::RecordBatch),
+    Schema(arrow::datatypes::Schema),
+}
+
+pub fn arrow_data_from_flight_data(
+    flight_data: FlightData,
+    arrow_schema_ref: &SchemaRef,
+) -> Result<ArrowFlightData> {
+    let ipc_message =
+        arrow::ipc::root_as_message(&flight_data.data_header[..]).map_err(|err| {
+            ArrowError::ParseError(format!("Unable to get root as message: {:?}", err))
+        })?;
+
+    match ipc_message.header_type() {
+        MessageHeader::RecordBatch => {
+            let ipc_record_batch =
+                ipc_message
+                    .header_as_record_batch()
+                    .ok_or(ArrowError::ComputeError(
+                        "Unable to convert flight data header to a record batch"
+                            .to_string(),
+                    ))?;
+
+            let dictionaries_by_field = HashMap::new();
+            let record_batch = arrow::ipc::reader::read_record_batch(
+                &Buffer::from(&flight_data.data_body),
+                ipc_record_batch,
+                arrow_schema_ref.clone(),
+                &dictionaries_by_field,
+                None,
+                &ipc_message.version(),
+            )?;
+            Ok(ArrowFlightData::RecordBatch(record_batch))
+        }
+        MessageHeader::Schema => {
+            let ipc_schema =
+                ipc_message
+                    .header_as_schema()
+                    .ok_or(ArrowError::ComputeError(
+                        "Unable to convert flight data header to a schema".to_string(),
+                    ))?;
+
+            let arrow_schema = arrow::ipc::convert::fb_to_schema(ipc_schema);
+            Ok(ArrowFlightData::Schema(arrow_schema))
+        }
+        MessageHeader::DictionaryBatch => {
+            let _ = ipc_message.header_as_dictionary_batch().ok_or(
+                ArrowError::ComputeError(
+                    "Unable to convert flight data header to a dictionary batch"
+                        .to_string(),
+                ),
+            )?;
+            Err(ArrowError::NotYetImplemented(
+                "no idea on how to convert an ipc dictionary batch to an arrow type"
+                    .to_string(),
+            ))
+        }
+        MessageHeader::Tensor => {
+            let _ = ipc_message
+                .header_as_tensor()
+                .ok_or(ArrowError::ComputeError(
+                    "Unable to convert flight data header to a tensor".to_string(),
+                ))?;
+            Err(ArrowError::NotYetImplemented(
+                "no idea on how to convert an ipc tensor to an arrow type".to_string(),
+            ))
+        }
+        MessageHeader::SparseTensor => {
+            let _ =
+                ipc_message
+                    .header_as_sparse_tensor()
+                    .ok_or(ArrowError::ComputeError(
+                        "Unable to convert flight data header to a sparse tensor"
+                            .to_string(),
+                    ))?;
+            Err(ArrowError::NotYetImplemented(
+                "no idea on how to convert an ipc sparse tensor to an arrow type"
+                    .to_string(),
+            ))
+        }
+        _ => Err(ArrowError::ComputeError(format!(
+            "Unable to convert message with header_type: '{:?}' to arrow data",
+            ipc_message.header_type()
+        ))),
+    }
+}
+
+#[cfg(test)]
+
+mod tests {
+    use std::time::Duration;
+    use super::*;
+    use log::{debug, error, warn};
+    use tonic::transport::{Channel, Error};
+    //use tonic::codegen::*;
+    //use tonic::codegen::http::Uri;
+
+    pub async fn create_grpc_client_connection<D>(
+        dst: D,
+    ) -> std::result::Result<Channel, Error>
+        where
+            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+    {
+        let endpoint = tonic::transport::Endpoint::new(dst)?
+            .connect_timeout(Duration::from_secs(20))
+            .timeout(Duration::from_secs(20))
+            // Disable Nagle's Algorithm since we don't want packets to wait
+            .tcp_nodelay(true)
+            .tcp_keepalive(Option::Some(Duration::from_secs(3600)))
+            .http2_keep_alive_interval(Duration::from_secs(300))
+            .keep_alive_timeout(Duration::from_secs(20))
+            .keep_alive_while_idle(true);
+        endpoint.connect().await
+    }
+    pub struct FlightSQLClient<T> {
+        inner: FlightServiceClient<T>,
+    }
+    impl <T> FlightSQLClient<T>
+    {
+        /// Create a new BallistaClient to connect to the executor listening on the specified
+        /// host and port
+        pub async fn try_new_flight_client(host: &str, port: u16) -> Result<FlightServiceClient<Channel>>  {
+            let addr = format!("http://{}:{}", host, port);
+            debug!("BallistaClient connecting to {}", addr);
+            let connection =
+                create_grpc_client_connection(addr.clone())
+                    .await
+                    .map_err(|e| {
+                        ArrowError::InvalidArgumentError(format!(
+                            "Error connecting to Ballista scheduler or executor at {}: {:?}",
+                            addr, e
+                        ))
+                    })?;
+            let mut flight_client = FlightServiceClient::new(connection);
+            debug!("BallistaClient connected OK");
+
+            Ok(flight_client)
+        }
+    }
+    #[test]
+    fn test_select_1() -> Result<()> {
+        let host = "127.0.0.1";
+        let mut flight_client = FlightSQLClient::try_new_flight_client(host, 50050);
+        let mut client = FlightSqlServiceClient::new(flight_client) ;
+        let result = client.execute("select 1;".to_string());
+
+        Ok(())
+    }
+}
+

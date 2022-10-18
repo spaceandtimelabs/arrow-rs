@@ -41,7 +41,7 @@ pub enum ArrowError {
     /// Error during import or export to/from the C Data Interface
     CDataInterface(String),
     DictionaryKeyOverflowError,
-    #[cfg(feature = "flight-sql-experimental")]
+    // #[cfg(feature = "flight-sql-experimental")]
     TonicRequestError(String),
 }
 

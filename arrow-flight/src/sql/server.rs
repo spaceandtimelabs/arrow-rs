@@ -533,9 +533,9 @@ where
 
     async fn do_action(
         &self,
-        request: Request<Action>,
+        req: Request<Action>,
     ) -> Result<Response<Self::DoActionStream>, Status> {
-        let request = request.into_inner();
+        let request = req.get_ref();
 
         if request.r#type == ACTION_TYPE_CREATE_PREPARED_STATEMENT {
             let any: prost_types::Any =
@@ -549,9 +549,7 @@ where
                         "Unable to unpack ActionCreatePreparedStatementRequest.",
                     )
                 })?;
-            let stmt = self
-                .do_action_create_prepared_statement(cmd, request)
-                .await?;
+            let stmt = self.do_action_create_prepared_statement(cmd, req).await?;
             let output = futures::stream::iter(vec![Ok(super::super::gen::Result {
                 body: stmt.as_any().encode_to_vec(),
             })]);
@@ -569,13 +567,13 @@ where
                         "Unable to unpack ActionClosePreparedStatementRequest.",
                     )
                 })?;
-            self.do_action_close_prepared_statement(cmd, request).await;
+            self.do_action_close_prepared_statement(cmd, req).await;
             return Ok(Response::new(Box::pin(futures::stream::empty())));
         }
 
         Err(Status::invalid_argument(format!(
             "do_action: The defined request is invalid: {:?}",
-            request.get_ref().r#type
+            req.get_ref().r#type
         )))
     }
 
