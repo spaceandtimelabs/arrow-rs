@@ -60,7 +60,7 @@ impl Bytes {
     /// This function is unsafe as there is no guarantee that the given pointer is valid for `len`
     /// bytes. If the `ptr` and `capacity` come from a `Buffer`, then this is guaranteed.
     #[inline]
-    pub(crate) unsafe fn new(
+    pub unsafe fn new(
         ptr: std::ptr::NonNull<u8>,
         len: usize,
         deallocation: Deallocation,

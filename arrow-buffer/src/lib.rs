@@ -22,7 +22,7 @@ pub mod buffer;
 pub use buffer::{Buffer, MutableBuffer};
 
 mod bigint;
-mod bytes;
+pub mod bytes;
 mod native;
 pub use bigint::i256;
 

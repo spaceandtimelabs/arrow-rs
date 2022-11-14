@@ -122,7 +122,7 @@ pub trait Allocation: RefUnwindSafe + Send + Sync {}
 impl<T: RefUnwindSafe + Send + Sync> Allocation for T {}
 
 /// Mode of deallocating memory regions
-pub(crate) enum Deallocation {
+pub enum Deallocation {
     /// An allocation of the given capacity that needs to be deallocated using arrows's cache aligned allocator.
     /// See [allocate_aligned] and [free_aligned].
     Arrow(usize),
