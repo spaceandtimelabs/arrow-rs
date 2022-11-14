@@ -133,41 +133,51 @@ mod tests {
             Field::new("b", DataType::Int32, true),
         ]));
 
+        let strings = Arc::new(array::StringArray::from(vec![
+            Some("a"),
+            Some("b"),
+            None,
+            Some("d"),
+        ]));
+        let ints = Arc::new(array::Int32Array::from(vec![
+            Some(1),
+            None,
+            Some(10),
+            Some(100),
+        ]));
+
         // define data.
-        let batch = RecordBatch::try_new(
+        let mut batch = RecordBatch::try_new(
             schema,
             vec![
-                Arc::new(array::StringArray::from(vec![
-                    Some("a"),
-                    Some("b"),
-                    None,
-                    Some("d"),
-                ])),
-                Arc::new(array::Int32Array::from(vec![
-                    Some(1),
-                    None,
-                    Some(10),
-                    Some(100),
-                ])),
+                strings,
+                ints.clone(),
             ],
         )?;
+        batch.row_count = 0;
 
-        let table = pretty_format_batches(&[batch])?.to_string();
+        let mut batches = &mut [batch];
+        let table = pretty_format_batches(batches)?.to_string();
+        let expected = r#"
++---+---+
+| a | b |
++---+---+
++---+---+"#.trim();
+        let actual = format!("{}", table);
+        assert_eq!(actual, expected);
 
-        let expected = vec![
-            "+---+-----+",
-            "| a | b   |",
-            "+---+-----+",
-            "| a | 1   |",
-            "| b |     |",
-            "|   | 10  |",
-            "| d | 100 |",
-            "+---+-----+",
-        ];
-
-        let actual: Vec<&str> = table.lines().collect();
-
-        assert_eq!(expected, actual, "Actual result:\n{}", table);
+        // insert record
+        ints.set_unchecked(0, 42);
+        batches[0].row_count = 1;
+        let table = pretty_format_batches(batches)?.to_string();
+        let expected = r#"
++---+----+
+| a | b  |
++---+----+
+| a | 42 |
++---+----+"#.trim();
+        let actual = format!("{}", table);
+        assert_eq!(actual, expected);
 
         Ok(())
     }

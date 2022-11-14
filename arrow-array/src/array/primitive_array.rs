@@ -221,7 +221,7 @@ pub struct PrimitiveArray<T: ArrowPrimitiveType> {
     /// Underlying ArrayData
     /// # Safety
     /// must have exactly one buffer, aligned to type T
-    data: ArrayData,
+    pub data: ArrayData,
     /// Pointer to the value array. The lifetime of this must be <= to the value buffer
     /// stored in `data`, so it's safe to store.
     /// # Safety
@@ -270,6 +270,15 @@ impl<T: ArrowPrimitiveType> PrimitiveArray<T> {
     pub unsafe fn value_unchecked(&self, i: usize) -> T::Native {
         let offset = i + self.offset();
         *self.raw_values.as_ptr().add(offset)
+    }
+
+    #[inline]
+    pub fn set_unchecked(&self, i: usize, value: T::Native) {
+        let offset = i + self.offset();
+        unsafe {
+            let ptr = self.raw_values.as_ptr().add(offset).cast_mut();
+            *ptr = value;
+        }
     }
 
     /// Returns the primitive value at index `i`.
