@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"arrow_buffer":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/arith/trait.Neg.html\" title=\"trait core::ops::arith::Neg\">Neg</a> for <a class=\"struct\" href=\"arrow_buffer/bigint/struct.i256.html\" title=\"struct arrow_buffer::bigint::i256\">i256</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
