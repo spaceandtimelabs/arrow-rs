@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `arrow-buffer/src/util/bit_util.rs`."><title>bit_util.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="arrow_buffer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (87293c958 2024-05-08)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `arrow-buffer/src/util/bit_util.rs`."><title>bit_util.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="arrow_buffer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (867900499 2024-05-23)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -271,18 +271,6 @@
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -302,19 +290,7 @@
 
 </span><span class="doccomment">//! Utils for working with bits
 
-</span><span class="kw">const </span>BIT_MASK: [u8; <span class="number">8</span>] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>];
-<span class="kw">const </span>UNSET_BIT_MASK: [u8; <span class="number">8</span>] = [
-    <span class="number">255 </span>- <span class="number">1</span>,
-    <span class="number">255 </span>- <span class="number">2</span>,
-    <span class="number">255 </span>- <span class="number">4</span>,
-    <span class="number">255 </span>- <span class="number">8</span>,
-    <span class="number">255 </span>- <span class="number">16</span>,
-    <span class="number">255 </span>- <span class="number">32</span>,
-    <span class="number">255 </span>- <span class="number">64</span>,
-    <span class="number">255 </span>- <span class="number">128</span>,
-];
-
-<span class="doccomment">/// Returns the nearest number that is `&gt;=` than `num` and is a multiple of 64
+/// Returns the nearest number that is `&gt;=` than `num` and is a multiple of 64
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>round_upto_multiple_of_64(num: usize) -&gt; usize {
     round_upto_power_of_2(num, <span class="number">64</span>)
@@ -332,7 +308,7 @@
 <span class="doccomment">/// Returns whether bit at position `i` in `data` is set or not
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>get_bit(data: <span class="kw-2">&amp;</span>[u8], i: usize) -&gt; bool {
-    (data[i &gt;&gt; <span class="number">3</span>] &amp; BIT_MASK[i &amp; <span class="number">7</span>]) != <span class="number">0
+    data[i / <span class="number">8</span>] &amp; (<span class="number">1 </span>&lt;&lt; (i % <span class="number">8</span>)) != <span class="number">0
 </span>}
 
 <span class="doccomment">/// Returns whether bit at position `i` in `data` is set or not.
@@ -343,13 +319,13 @@
 /// responsible to guarantee that `i` is within bounds.
 </span><span class="attr">#[inline]
 </span><span class="kw">pub unsafe fn </span>get_bit_raw(data: <span class="kw-2">*const </span>u8, i: usize) -&gt; bool {
-    (<span class="kw-2">*</span>data.add(i &gt;&gt; <span class="number">3</span>) &amp; BIT_MASK[i &amp; <span class="number">7</span>]) != <span class="number">0
+    (<span class="kw-2">*</span>data.add(i / <span class="number">8</span>) &amp; (<span class="number">1 </span>&lt;&lt; (i % <span class="number">8</span>))) != <span class="number">0
 </span>}
 
 <span class="doccomment">/// Sets bit at position `i` for `data` to 1
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>set_bit(data: <span class="kw-2">&amp;mut </span>[u8], i: usize) {
-    data[i &gt;&gt; <span class="number">3</span>] |= BIT_MASK[i &amp; <span class="number">7</span>];
+    data[i / <span class="number">8</span>] |= <span class="number">1 </span>&lt;&lt; (i % <span class="number">8</span>);
 }
 
 <span class="doccomment">/// Sets bit at position `i` for `data`
@@ -360,13 +336,13 @@
 /// responsible to guarantee that `i` is within bounds.
 </span><span class="attr">#[inline]
 </span><span class="kw">pub unsafe fn </span>set_bit_raw(data: <span class="kw-2">*mut </span>u8, i: usize) {
-    <span class="kw-2">*</span>data.add(i &gt;&gt; <span class="number">3</span>) |= BIT_MASK[i &amp; <span class="number">7</span>];
+    <span class="kw-2">*</span>data.add(i / <span class="number">8</span>) |= <span class="number">1 </span>&lt;&lt; (i % <span class="number">8</span>);
 }
 
 <span class="doccomment">/// Sets bit at position `i` for `data` to 0
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>unset_bit(data: <span class="kw-2">&amp;mut </span>[u8], i: usize) {
-    data[i &gt;&gt; <span class="number">3</span>] &amp;= UNSET_BIT_MASK[i &amp; <span class="number">7</span>];
+    data[i / <span class="number">8</span>] &amp;= !(<span class="number">1 </span>&lt;&lt; (i % <span class="number">8</span>));
 }
 
 <span class="doccomment">/// Sets bit at position `i` for `data` to 0
@@ -377,7 +353,7 @@
 /// responsible to guarantee that `i` is within bounds.
 </span><span class="attr">#[inline]
 </span><span class="kw">pub unsafe fn </span>unset_bit_raw(data: <span class="kw-2">*mut </span>u8, i: usize) {
-    <span class="kw-2">*</span>data.add(i &gt;&gt; <span class="number">3</span>) &amp;= UNSET_BIT_MASK[i &amp; <span class="number">7</span>];
+    <span class="kw-2">*</span>data.add(i / <span class="number">8</span>) &amp;= !(<span class="number">1 </span>&lt;&lt; (i % <span class="number">8</span>));
 }
 
 <span class="doccomment">/// Returns the ceil of `value`/`divisor`

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `arrow-csv/src/reader/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="arrow_csv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (87293c958 2024-05-08)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `arrow-csv/src/reader/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="arrow_csv" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (867900499 2024-05-23)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2537,6 +2537,57 @@
 <a href="#2537" id="2537">2537</a>
 <a href="#2538" id="2538">2538</a>
 <a href="#2539" id="2539">2539</a>
+<a href="#2540" id="2540">2540</a>
+<a href="#2541" id="2541">2541</a>
+<a href="#2542" id="2542">2542</a>
+<a href="#2543" id="2543">2543</a>
+<a href="#2544" id="2544">2544</a>
+<a href="#2545" id="2545">2545</a>
+<a href="#2546" id="2546">2546</a>
+<a href="#2547" id="2547">2547</a>
+<a href="#2548" id="2548">2548</a>
+<a href="#2549" id="2549">2549</a>
+<a href="#2550" id="2550">2550</a>
+<a href="#2551" id="2551">2551</a>
+<a href="#2552" id="2552">2552</a>
+<a href="#2553" id="2553">2553</a>
+<a href="#2554" id="2554">2554</a>
+<a href="#2555" id="2555">2555</a>
+<a href="#2556" id="2556">2556</a>
+<a href="#2557" id="2557">2557</a>
+<a href="#2558" id="2558">2558</a>
+<a href="#2559" id="2559">2559</a>
+<a href="#2560" id="2560">2560</a>
+<a href="#2561" id="2561">2561</a>
+<a href="#2562" id="2562">2562</a>
+<a href="#2563" id="2563">2563</a>
+<a href="#2564" id="2564">2564</a>
+<a href="#2565" id="2565">2565</a>
+<a href="#2566" id="2566">2566</a>
+<a href="#2567" id="2567">2567</a>
+<a href="#2568" id="2568">2568</a>
+<a href="#2569" id="2569">2569</a>
+<a href="#2570" id="2570">2570</a>
+<a href="#2571" id="2571">2571</a>
+<a href="#2572" id="2572">2572</a>
+<a href="#2573" id="2573">2573</a>
+<a href="#2574" id="2574">2574</a>
+<a href="#2575" id="2575">2575</a>
+<a href="#2576" id="2576">2576</a>
+<a href="#2577" id="2577">2577</a>
+<a href="#2578" id="2578">2578</a>
+<a href="#2579" id="2579">2579</a>
+<a href="#2580" id="2580">2580</a>
+<a href="#2581" id="2581">2581</a>
+<a href="#2582" id="2582">2582</a>
+<a href="#2583" id="2583">2583</a>
+<a href="#2584" id="2584">2584</a>
+<a href="#2585" id="2585">2585</a>
+<a href="#2586" id="2586">2586</a>
+<a href="#2587" id="2587">2587</a>
+<a href="#2588" id="2588">2588</a>
+<a href="#2589" id="2589">2589</a>
+<a href="#2590" id="2590">2590</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -2769,6 +2820,7 @@
     escape: <span class="prelude-ty">Option</span>&lt;u8&gt;,
     quote: <span class="prelude-ty">Option</span>&lt;u8&gt;,
     terminator: <span class="prelude-ty">Option</span>&lt;u8&gt;,
+    comment: <span class="prelude-ty">Option</span>&lt;u8&gt;,
     null_regex: NullRegex,
     truncated_rows: bool,
 }
@@ -2796,6 +2848,11 @@
 
     <span class="kw">pub fn </span>with_terminator(<span class="kw-2">mut </span><span class="self">self</span>, terminator: u8) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.terminator = <span class="prelude-val">Some</span>(terminator);
+        <span class="self">self
+    </span>}
+
+    <span class="kw">pub fn </span>with_comment(<span class="kw-2">mut </span><span class="self">self</span>, comment: u8) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.comment = <span class="prelude-val">Some</span>(comment);
         <span class="self">self
     </span>}
 
@@ -2892,6 +2949,9 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(t) = <span class="self">self</span>.terminator {
             builder.terminator(csv::Terminator::Any(t));
         }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(comment) = <span class="self">self</span>.comment {
+            builder.comment(<span class="prelude-val">Some</span>(comment));
+        }
         builder.from_reader(reader)
     }
 
@@ -2899,6 +2959,7 @@
     </span><span class="kw">fn </span>build_parser(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; csv_core::Reader {
         <span class="kw">let </span><span class="kw-2">mut </span>builder = csv_core::ReaderBuilder::new();
         builder.escape(<span class="self">self</span>.escape);
+        builder.comment(<span class="self">self</span>.comment);
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(c) = <span class="self">self</span>.delimiter {
             builder.delimiter(c);
@@ -3645,6 +3706,11 @@
 
     <span class="kw">pub fn </span>with_terminator(<span class="kw-2">mut </span><span class="self">self</span>, terminator: u8) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.format.terminator = <span class="prelude-val">Some</span>(terminator);
+        <span class="self">self
+    </span>}
+
+    <span class="kw">pub fn </span>with_comment(<span class="kw-2">mut </span><span class="self">self</span>, comment: u8) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.format.comment = <span class="prelude-val">Some</span>(comment);
         <span class="self">self
     </span>}
 
@@ -5074,6 +5140,42 @@
             }
             <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>t.get(), expected, <span class="string">"{values:?}"</span>)
         }
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_comment() {
+        <span class="kw">let </span>schema = Schema::new(<span class="macro">vec!</span>[
+            Field::new(<span class="string">"a"</span>, DataType::Int8, <span class="bool-val">false</span>),
+            Field::new(<span class="string">"b"</span>, DataType::Int8, <span class="bool-val">false</span>),
+        ]);
+
+        <span class="kw">let </span>csv = <span class="string">"# comment1 \n1,2\n#comment2\n11,22"</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>read = Cursor::new(csv.as_bytes());
+        <span class="kw">let </span>reader = ReaderBuilder::new(Arc::new(schema))
+            .with_comment(<span class="string">b'#'</span>)
+            .build(<span class="kw-2">&amp;mut </span>read)
+            .unwrap();
+
+        <span class="kw">let </span>batches = reader.collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;().unwrap();
+        <span class="macro">assert_eq!</span>(batches.len(), <span class="number">1</span>);
+        <span class="kw">let </span>b = batches.first().unwrap();
+        <span class="macro">assert_eq!</span>(b.num_columns(), <span class="number">2</span>);
+        <span class="macro">assert_eq!</span>(
+            b.column(<span class="number">0</span>)
+                .as_any()
+                .downcast_ref::&lt;Int8Array&gt;()
+                .unwrap()
+                .values(),
+            <span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">11</span>]
+        );
+        <span class="macro">assert_eq!</span>(
+            b.column(<span class="number">1</span>)
+                .as_any()
+                .downcast_ref::&lt;Int8Array&gt;()
+                .unwrap()
+                .values(),
+            <span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">22</span>]
+        );
     }
 }
 </code></pre></div></section></main></body></html>

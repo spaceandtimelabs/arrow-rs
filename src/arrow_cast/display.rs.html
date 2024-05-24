@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `arrow-cast/src/display.rs`."><title>display.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="arrow_cast" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (87293c958 2024-05-08)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `arrow-cast/src/display.rs`."><title>display.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="arrow_cast" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (867900499 2024-05-23)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1142,13 +1142,6 @@
 <a href="#1142" id="1142">1142</a>
 <a href="#1143" id="1143">1143</a>
 <a href="#1144" id="1144">1144</a>
-<a href="#1145" id="1145">1145</a>
-<a href="#1146" id="1146">1146</a>
-<a href="#1147" id="1147">1147</a>
-<a href="#1148" id="1148">1148</a>
-<a href="#1149" id="1149">1149</a>
-<a href="#1150" id="1150">1150</a>
-<a href="#1151" id="1151">1151</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -1811,19 +1804,16 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; DisplayIndex <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span>PrimitiveArray&lt;IntervalDayTimeType&gt; {
     <span class="kw">fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize, f: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write) -&gt; FormatResult {
-        <span class="kw">let </span>value: u64 = <span class="self">self</span>.value(idx) <span class="kw">as </span>u64;
+        <span class="kw">let </span>value = <span class="self">self</span>.value(idx);
 
-        <span class="kw">let </span>days_parts: i32 = ((value &amp; <span class="number">0xFFFFFFFF00000000</span>) &gt;&gt; <span class="number">32</span>) <span class="kw">as </span>i32;
-        <span class="kw">let </span>milliseconds_part: i32 = (value &amp; <span class="number">0xFFFFFFFF</span>) <span class="kw">as </span>i32;
-
-        <span class="kw">let </span>secs = milliseconds_part / <span class="number">1_000</span>;
+        <span class="kw">let </span>secs = value.milliseconds / <span class="number">1_000</span>;
         <span class="kw">let </span>mins = secs / <span class="number">60</span>;
         <span class="kw">let </span>hours = mins / <span class="number">60</span>;
 
         <span class="kw">let </span>secs = secs - (mins * <span class="number">60</span>);
         <span class="kw">let </span>mins = mins - (hours * <span class="number">60</span>);
 
-        <span class="kw">let </span>milliseconds = milliseconds_part % <span class="number">1_000</span>;
+        <span class="kw">let </span>milliseconds = value.milliseconds % <span class="number">1_000</span>;
 
         <span class="kw">let </span>secs_sign = <span class="kw">if </span>secs &lt; <span class="number">0 </span>|| milliseconds &lt; <span class="number">0 </span>{
             <span class="string">"-"
@@ -1834,7 +1824,7 @@
         <span class="macro">write!</span>(
             f,
             <span class="string">"0 years 0 mons {} days {} hours {} mins {}{}.{:03} secs"</span>,
-            days_parts,
+            value.days,
             hours,
             mins,
             secs_sign,
@@ -1847,28 +1837,24 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>&gt; DisplayIndex <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span>PrimitiveArray&lt;IntervalMonthDayNanoType&gt; {
     <span class="kw">fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize, f: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write) -&gt; FormatResult {
-        <span class="kw">let </span>value: u128 = <span class="self">self</span>.value(idx) <span class="kw">as </span>u128;
+        <span class="kw">let </span>value = <span class="self">self</span>.value(idx);
 
-        <span class="kw">let </span>months_part: i32 = ((value &amp; <span class="number">0xFFFFFFFF000000000000000000000000</span>) &gt;&gt; <span class="number">96</span>) <span class="kw">as </span>i32;
-        <span class="kw">let </span>days_part: i32 = ((value &amp; <span class="number">0xFFFFFFFF0000000000000000</span>) &gt;&gt; <span class="number">64</span>) <span class="kw">as </span>i32;
-        <span class="kw">let </span>nanoseconds_part: i64 = (value &amp; <span class="number">0xFFFFFFFFFFFFFFFF</span>) <span class="kw">as </span>i64;
-
-        <span class="kw">let </span>secs = nanoseconds_part / <span class="number">1_000_000_000</span>;
+        <span class="kw">let </span>secs = value.nanoseconds / <span class="number">1_000_000_000</span>;
         <span class="kw">let </span>mins = secs / <span class="number">60</span>;
         <span class="kw">let </span>hours = mins / <span class="number">60</span>;
 
         <span class="kw">let </span>secs = secs - (mins * <span class="number">60</span>);
         <span class="kw">let </span>mins = mins - (hours * <span class="number">60</span>);
 
-        <span class="kw">let </span>nanoseconds = nanoseconds_part % <span class="number">1_000_000_000</span>;
+        <span class="kw">let </span>nanoseconds = value.nanoseconds % <span class="number">1_000_000_000</span>;
 
         <span class="kw">let </span>secs_sign = <span class="kw">if </span>secs &lt; <span class="number">0 </span>|| nanoseconds &lt; <span class="number">0 </span>{ <span class="string">"-" </span>} <span class="kw">else </span>{ <span class="string">"" </span>};
 
         <span class="macro">write!</span>(
             f,
             <span class="string">"0 years {} mons {} days {} hours {} mins {}{}.{:09} secs"</span>,
-            months_part,
-            days_part,
+            value.months,
+            value.days,
             hours,
             mins,
             secs_sign,

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `parquet/src/arrow/arrow_writer/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="parquet" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (87293c958 2024-05-08)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `parquet/src/arrow/arrow_writer/mod.rs`."><title>mod.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="parquet" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (867900499 2024-05-23)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3083,6 +3083,16 @@
 <a href="#3083" id="3083">3083</a>
 <a href="#3084" id="3084">3084</a>
 <a href="#3085" id="3085">3085</a>
+<a href="#3086" id="3086">3086</a>
+<a href="#3087" id="3087">3087</a>
+<a href="#3088" id="3088">3088</a>
+<a href="#3089" id="3089">3089</a>
+<a href="#3090" id="3090">3090</a>
+<a href="#3091" id="3091">3091</a>
+<a href="#3092" id="3092">3092</a>
+<a href="#3093" id="3093">3093</a>
+<a href="#3094" id="3094">3094</a>
+<a href="#3095" id="3095">3095</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -4027,11 +4037,11 @@
 ) -&gt; Vec&lt;FixedLenByteArray&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>values = Vec::with_capacity(indices.len());
     <span class="kw">for </span>i <span class="kw">in </span>indices {
-        <span class="kw">let </span><span class="kw-2">mut </span>prefix = <span class="macro">vec!</span>[<span class="number">0</span>; <span class="number">4</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>value = array.value(<span class="kw-2">*</span>i).to_le_bytes().to_vec();
-        prefix.append(<span class="kw-2">&amp;mut </span>value);
-        <span class="macro">debug_assert_eq!</span>(prefix.len(), <span class="number">12</span>);
-        values.push(FixedLenByteArray::from(ByteArray::from(prefix)));
+        <span class="kw">let </span><span class="kw-2">mut </span>out = [<span class="number">0</span>; <span class="number">12</span>];
+        <span class="kw">let </span>value = array.value(<span class="kw-2">*</span>i);
+        out[<span class="number">4</span>..<span class="number">8</span>].copy_from_slice(<span class="kw-2">&amp;</span>value.days.to_le_bytes());
+        out[<span class="number">8</span>..<span class="number">12</span>].copy_from_slice(<span class="kw-2">&amp;</span>value.milliseconds.to_le_bytes());
+        values.push(FixedLenByteArray::from(ByteArray::from(out.to_vec())));
     }
     values
 }
@@ -4101,7 +4111,7 @@
     <span class="kw">use </span>arrow::error::Result <span class="kw">as </span>ArrowResult;
     <span class="kw">use </span>arrow::util::pretty::pretty_format_batches;
     <span class="kw">use </span>arrow::{array::<span class="kw-2">*</span>, buffer::Buffer};
-    <span class="kw">use </span>arrow_buffer::NullBuffer;
+    <span class="kw">use </span>arrow_buffer::{IntervalDayTime, IntervalMonthDayNano, NullBuffer};
     <span class="kw">use </span>arrow_schema::Fields;
 
     <span class="kw">use </span><span class="kw">crate</span>::basic::Encoding;
@@ -5142,7 +5152,12 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>interval_day_time_single_column() {
-        required_and_optional::&lt;IntervalDayTimeArray, <span class="kw">_</span>&gt;(<span class="number">0</span>..SMALL_SIZE <span class="kw">as </span>i64);
+        required_and_optional::&lt;IntervalDayTimeArray, <span class="kw">_</span>&gt;(<span class="macro">vec!</span>[
+            IntervalDayTime::new(<span class="number">0</span>, <span class="number">1</span>),
+            IntervalDayTime::new(<span class="number">0</span>, <span class="number">3</span>),
+            IntervalDayTime::new(<span class="number">3</span>, -<span class="number">2</span>),
+            IntervalDayTime::new(-<span class="number">200</span>, <span class="number">4</span>),
+        ]);
     }
 
     <span class="attr">#[test]
@@ -5150,7 +5165,12 @@
         expected = <span class="string">"Attempting to write an Arrow interval type MonthDayNano to parquet that is not yet implemented"
     </span>)]
     </span><span class="kw">fn </span>interval_month_day_nano_single_column() {
-        required_and_optional::&lt;IntervalMonthDayNanoArray, <span class="kw">_</span>&gt;(<span class="number">0</span>..SMALL_SIZE <span class="kw">as </span>i128);
+        required_and_optional::&lt;IntervalMonthDayNanoArray, <span class="kw">_</span>&gt;(<span class="macro">vec!</span>[
+            IntervalMonthDayNano::new(<span class="number">0</span>, <span class="number">1</span>, <span class="number">5</span>),
+            IntervalMonthDayNano::new(<span class="number">0</span>, <span class="number">3</span>, <span class="number">2</span>),
+            IntervalMonthDayNano::new(<span class="number">3</span>, -<span class="number">2</span>, -<span class="number">5</span>),
+            IntervalMonthDayNano::new(-<span class="number">200</span>, <span class="number">4</span>, -<span class="number">1</span>),
+        ]);
     }
 
     <span class="attr">#[test]

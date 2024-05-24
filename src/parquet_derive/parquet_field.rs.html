@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `parquet_derive/src/parquet_field.rs`."><title>parquet_field.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="parquet_derive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (87293c958 2024-05-08)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `parquet_derive/src/parquet_field.rs`."><title>parquet_field.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="parquet_derive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (867900499 2024-05-23)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1402,6 +1402,61 @@
 <a href="#1402" id="1402">1402</a>
 <a href="#1403" id="1403">1403</a>
 <a href="#1404" id="1404">1404</a>
+<a href="#1405" id="1405">1405</a>
+<a href="#1406" id="1406">1406</a>
+<a href="#1407" id="1407">1407</a>
+<a href="#1408" id="1408">1408</a>
+<a href="#1409" id="1409">1409</a>
+<a href="#1410" id="1410">1410</a>
+<a href="#1411" id="1411">1411</a>
+<a href="#1412" id="1412">1412</a>
+<a href="#1413" id="1413">1413</a>
+<a href="#1414" id="1414">1414</a>
+<a href="#1415" id="1415">1415</a>
+<a href="#1416" id="1416">1416</a>
+<a href="#1417" id="1417">1417</a>
+<a href="#1418" id="1418">1418</a>
+<a href="#1419" id="1419">1419</a>
+<a href="#1420" id="1420">1420</a>
+<a href="#1421" id="1421">1421</a>
+<a href="#1422" id="1422">1422</a>
+<a href="#1423" id="1423">1423</a>
+<a href="#1424" id="1424">1424</a>
+<a href="#1425" id="1425">1425</a>
+<a href="#1426" id="1426">1426</a>
+<a href="#1427" id="1427">1427</a>
+<a href="#1428" id="1428">1428</a>
+<a href="#1429" id="1429">1429</a>
+<a href="#1430" id="1430">1430</a>
+<a href="#1431" id="1431">1431</a>
+<a href="#1432" id="1432">1432</a>
+<a href="#1433" id="1433">1433</a>
+<a href="#1434" id="1434">1434</a>
+<a href="#1435" id="1435">1435</a>
+<a href="#1436" id="1436">1436</a>
+<a href="#1437" id="1437">1437</a>
+<a href="#1438" id="1438">1438</a>
+<a href="#1439" id="1439">1439</a>
+<a href="#1440" id="1440">1440</a>
+<a href="#1441" id="1441">1441</a>
+<a href="#1442" id="1442">1442</a>
+<a href="#1443" id="1443">1443</a>
+<a href="#1444" id="1444">1444</a>
+<a href="#1445" id="1445">1445</a>
+<a href="#1446" id="1446">1446</a>
+<a href="#1447" id="1447">1447</a>
+<a href="#1448" id="1448">1448</a>
+<a href="#1449" id="1449">1449</a>
+<a href="#1450" id="1450">1450</a>
+<a href="#1451" id="1451">1451</a>
+<a href="#1452" id="1452">1452</a>
+<a href="#1453" id="1453">1453</a>
+<a href="#1454" id="1454">1454</a>
+<a href="#1455" id="1455">1455</a>
+<a href="#1456" id="1456">1456</a>
+<a href="#1457" id="1457">1457</a>
+<a href="#1458" id="1458">1458</a>
+<a href="#1459" id="1459">1459</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -1540,7 +1595,7 @@
                 Type::Option(<span class="kw">_</span>) =&gt; <span class="macro">unimplemented!</span>(<span class="string">"Unsupported nesting encountered"</span>),
                 Type::Reference(<span class="kw">_</span>, <span class="kw-2">ref </span>second_type)
                 | Type::Vec(<span class="kw-2">ref </span>second_type)
-                | Type::Array(<span class="kw-2">ref </span>second_type)
+                | Type::Array(<span class="kw-2">ref </span>second_type, <span class="kw">_</span>)
                 | Type::Slice(<span class="kw-2">ref </span>second_type) =&gt; <span class="kw">match </span><span class="kw-2">**</span>second_type {
                     Type::TypePath(<span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.optional_definition_levels()),
                     <span class="kw">_ </span>=&gt; <span class="macro">unimplemented!</span>(<span class="string">"Unsupported nesting encountered"</span>),
@@ -1548,11 +1603,11 @@
             },
             Type::Reference(<span class="kw">_</span>, <span class="kw-2">ref </span>first_type)
             | Type::Vec(<span class="kw-2">ref </span>first_type)
-            | Type::Array(<span class="kw-2">ref </span>first_type)
+            | Type::Array(<span class="kw-2">ref </span>first_type, <span class="kw">_</span>)
             | Type::Slice(<span class="kw-2">ref </span>first_type) =&gt; <span class="kw">match </span><span class="kw-2">**</span>first_type {
                 Type::TypePath(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
                 Type::Vec(<span class="kw-2">ref </span>second_type)
-                | Type::Array(<span class="kw-2">ref </span>second_type)
+                | Type::Array(<span class="kw-2">ref </span>second_type, <span class="kw">_</span>)
                 | Type::Slice(<span class="kw-2">ref </span>second_type) =&gt; <span class="kw">match </span><span class="kw-2">**</span>second_type {
                     Type::TypePath(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
                     Type::Reference(<span class="kw">_</span>, <span class="kw-2">ref </span>third_type) =&gt; <span class="kw">match </span><span class="kw-2">**</span>third_type {
@@ -1565,7 +1620,7 @@
                     <span class="kw">match </span><span class="kw-2">**</span>second_type {
                         Type::TypePath(<span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.optional_definition_levels()),
                         Type::Vec(<span class="kw-2">ref </span>third_type)
-                        | Type::Array(<span class="kw-2">ref </span>third_type)
+                        | Type::Array(<span class="kw-2">ref </span>third_type, <span class="kw">_</span>)
                         | Type::Slice(<span class="kw-2">ref </span>third_type) =&gt; <span class="kw">match </span><span class="kw-2">**</span>third_type {
                             Type::TypePath(<span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(<span class="self">self</span>.optional_definition_levels()),
                             Type::Reference(<span class="kw">_</span>, <span class="kw-2">ref </span>fourth_type) =&gt; <span class="kw">match </span><span class="kw-2">**</span>fourth_type {
@@ -1720,25 +1775,23 @@
         <span class="kw">let </span>logical_type = <span class="self">self</span>.ty.logical_type();
         <span class="kw">let </span>repetition = <span class="self">self</span>.ty.repetition();
         <span class="kw">let </span>converted_type = <span class="self">self</span>.ty.converted_type();
+        <span class="kw">let </span>length = <span class="self">self</span>.ty.length();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = <span class="macro">quote!</span> {
+            ParquetType::primitive_type_builder(#field_name, #physical_type)
+                .with_logical_type(#logical_type)
+                .with_repetition(#repetition)
+        };
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(converted_type) = converted_type {
-            <span class="macro">quote!</span> {
-                fields.push(ParquetType::primitive_type_builder(#field_name, #physical_type)
-                    .with_logical_type(#logical_type)
-                    .with_repetition(#repetition)
-                    .with_converted_type(#converted_type)
-                    .build().unwrap().into()
-                )
-            }
-        } <span class="kw">else </span>{
-            <span class="macro">quote!</span> {
-                fields.push(ParquetType::primitive_type_builder(#field_name, #physical_type)
-                    .with_logical_type(#logical_type)
-                    .with_repetition(#repetition)
-                    .build().unwrap().into()
-                )
-            }
+            builder = <span class="macro">quote!</span> { #builder.with_converted_type(#converted_type) };
         }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(length) = length {
+            builder = <span class="macro">quote!</span> { #builder.with_length(#length) };
+        }
+
+        <span class="macro">quote!</span> {  fields.push(#builder.build().unwrap().into()) }
     }
 
     <span class="kw">fn </span>option_into_vals(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; proc_macro2::TokenStream {
@@ -1798,7 +1851,7 @@
                 <span class="macro">quote!</span> { rec.#field_name.signed_duration_since(::chrono::NaiveDate::from_ymd(<span class="number">1970</span>, <span class="number">1</span>, <span class="number">1</span>)).num_days() <span class="kw">as </span>i32 }
             }
             <span class="prelude-val">Some</span>(ThirdPartyType::Uuid) =&gt; {
-                <span class="macro">quote!</span> { (<span class="kw-2">&amp;</span>rec.#field_name.to_string()[..]).into() }
+                <span class="macro">quote!</span> { rec.#field_name.as_bytes().to_vec().into() }
             }
             <span class="kw">_ </span>=&gt; {
                 <span class="kw">if </span><span class="self">self</span>.is_a_byte_buf {
@@ -1834,7 +1887,7 @@
                 }
             }
             <span class="prelude-val">Some</span>(ThirdPartyType::Uuid) =&gt; {
-                <span class="macro">quote!</span> { ::uuid::Uuid::parse_str(vals[i].data().convert()).unwrap() }
+                <span class="macro">quote!</span> { ::uuid::Uuid::from_bytes(vals[i].data().try_into().unwrap()) }
             }
             <span class="kw">_ </span>=&gt; <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.ty {
                 Type::TypePath(<span class="kw">_</span>) =&gt; <span class="kw">match </span><span class="self">self</span>.ty.last_part().as_str() {
@@ -1873,7 +1926,7 @@
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq)]
 </span><span class="kw">enum </span>Type {
-    Array(Box&lt;Type&gt;),
+    Array(Box&lt;Type&gt;, syn::Expr),
     <span class="prelude-ty">Option</span>(Box&lt;Type&gt;),
     Slice(Box&lt;Type&gt;),
     Vec(Box&lt;Type&gt;),
@@ -1946,7 +1999,7 @@
             Type::TypePath(<span class="kw">_</span>) =&gt; parent_ty.unwrap_or(ty),
             Type::Option(<span class="kw-2">ref </span>first_type)
             | Type::Vec(<span class="kw-2">ref </span>first_type)
-            | Type::Array(<span class="kw-2">ref </span>first_type)
+            | Type::Array(<span class="kw-2">ref </span>first_type, <span class="kw">_</span>)
             | Type::Slice(<span class="kw-2">ref </span>first_type)
             | Type::Reference(<span class="kw">_</span>, <span class="kw-2">ref </span>first_type) =&gt; {
                 Type::leaf_type_recursive_helper(first_type, <span class="prelude-val">Some</span>(ty))
@@ -1964,7 +2017,7 @@
             Type::TypePath(<span class="kw-2">ref </span>type_) =&gt; type_,
             Type::Option(<span class="kw-2">ref </span>first_type)
             | Type::Vec(<span class="kw-2">ref </span>first_type)
-            | Type::Array(<span class="kw-2">ref </span>first_type)
+            | Type::Array(<span class="kw-2">ref </span>first_type, <span class="kw">_</span>)
             | Type::Slice(<span class="kw-2">ref </span>first_type)
             | Type::Reference(<span class="kw">_</span>, <span class="kw-2">ref </span>first_type) =&gt; <span class="kw">match </span><span class="kw-2">**</span>first_type {
                 Type::TypePath(<span class="kw-2">ref </span>type_) =&gt; type_,
@@ -2011,7 +2064,7 @@
         <span class="kw">let </span>leaf_type = <span class="self">self</span>.leaf_type_recursive();
 
         <span class="kw">match </span>leaf_type {
-            Type::Array(<span class="kw-2">ref </span>first_type) =&gt; {
+            Type::Array(<span class="kw-2">ref </span>first_type, _length) =&gt; {
                 <span class="kw">if let </span>Type::TypePath(<span class="kw">_</span>) = <span class="kw-2">**</span>first_type {
                     <span class="kw">if </span>last_part == <span class="string">"u8" </span>{
                         <span class="kw">return </span>BasicType::FIXED_LEN_BYTE_ARRAY;
@@ -2042,8 +2095,29 @@
             }
             <span class="string">"f32" </span>=&gt; BasicType::FLOAT,
             <span class="string">"f64" </span>=&gt; BasicType::DOUBLE,
-            <span class="string">"String" </span>| <span class="string">"str" </span>| <span class="string">"Uuid" </span>=&gt; BasicType::BYTE_ARRAY,
+            <span class="string">"String" </span>| <span class="string">"str" </span>=&gt; BasicType::BYTE_ARRAY,
+            <span class="string">"Uuid" </span>=&gt; BasicType::FIXED_LEN_BYTE_ARRAY,
             f =&gt; <span class="macro">unimplemented!</span>(<span class="string">"{} currently is not supported"</span>, f),
+        }
+    }
+
+    <span class="kw">fn </span>length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;syn::Expr&gt; {
+        <span class="kw">let </span>last_part = <span class="self">self</span>.last_part();
+        <span class="kw">let </span>leaf_type = <span class="self">self</span>.leaf_type_recursive();
+
+        <span class="comment">// `[u8; N]` =&gt; Some(N)
+        </span><span class="kw">if let </span>Type::Array(<span class="kw-2">ref </span>first_type, length) = leaf_type {
+            <span class="kw">if let </span>Type::TypePath(<span class="kw">_</span>) = <span class="kw-2">**</span>first_type {
+                <span class="kw">if </span>last_part == <span class="string">"u8" </span>{
+                    <span class="kw">return </span><span class="prelude-val">Some</span>(length.clone());
+                }
+            }
+        }
+
+        <span class="kw">match </span>last_part.trim() {
+            <span class="comment">// Uuid =&gt; [u8; 16] =&gt; Some(16)
+            </span><span class="string">"Uuid" </span>=&gt; <span class="prelude-val">Some</span>(<span class="macro">syn::parse_quote!</span>(<span class="number">16</span>)),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 
@@ -2052,7 +2126,7 @@
         <span class="kw">let </span>leaf_type = <span class="self">self</span>.leaf_type_recursive();
 
         <span class="kw">match </span>leaf_type {
-            Type::Array(<span class="kw-2">ref </span>first_type) =&gt; {
+            Type::Array(<span class="kw-2">ref </span>first_type, _length) =&gt; {
                 <span class="kw">if let </span>Type::TypePath(<span class="kw">_</span>) = <span class="kw-2">**</span>first_type {
                     <span class="kw">if </span>last_part == <span class="string">"u8" </span>{
                         <span class="kw">return </span><span class="macro">quote!</span> { <span class="prelude-val">None </span>};
@@ -2193,7 +2267,7 @@
 
     <span class="kw">fn </span>from_type_array(f: <span class="kw-2">&amp;</span>syn::Field, ta: <span class="kw-2">&amp;</span>syn::TypeArray) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>inner_type = Type::from_type(f, ta.elem.as_ref());
-        Type::Array(Box::new(inner_type))
+        Type::Array(Box::new(inner_type), ta.len.clone())
     }
 
     <span class="kw">fn </span>from_type_slice(f: <span class="kw-2">&amp;</span>syn::Field, ts: <span class="kw-2">&amp;</span>syn::TypeSlice) -&gt; <span class="self">Self </span>{
@@ -2495,6 +2569,7 @@
             a_fix_byte_buf: [u8; <span class="number">10</span>],
             a_complex_option: ::std::option::Option&lt;<span class="kw-2">&amp;</span>Vec&lt;u8&gt;&gt;,
             a_complex_vec: <span class="kw-2">&amp;</span>::std::vec::Vec&lt;<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;u8&gt;&gt;,
+            a_uuid: ::uuid::Uuid,
           }
         };
 
@@ -2514,7 +2589,42 @@
                 BasicType::BYTE_ARRAY,
                 BasicType::FIXED_LEN_BYTE_ARRAY,
                 BasicType::BYTE_ARRAY,
-                BasicType::INT32
+                BasicType::INT32,
+                BasicType::FIXED_LEN_BYTE_ARRAY,
+            ]
+        )
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_type_length() {
+        <span class="kw">let </span>snippet: proc_macro2::TokenStream = <span class="macro">quote!</span> {
+          <span class="kw">struct </span>LotsOfInnerTypes {
+            a_buf: ::std::vec::Vec&lt;u8&gt;,
+            a_number: i32,
+            a_verbose_option: ::std::option::Option&lt;bool&gt;,
+            a_silly_string: String,
+            a_fix_byte_buf: [u8; <span class="number">10</span>],
+            a_complex_option: ::std::option::Option&lt;<span class="kw-2">&amp;</span>Vec&lt;u8&gt;&gt;,
+            a_complex_vec: <span class="kw-2">&amp;</span>::std::vec::Vec&lt;<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;u8&gt;&gt;,
+            a_uuid: ::uuid::Uuid,
+          }
+        };
+
+        <span class="kw">let </span>fields = extract_fields(snippet);
+        <span class="kw">let </span>converted_fields: Vec&lt;<span class="kw">_</span>&gt; = fields.iter().map(Type::from).collect();
+        <span class="kw">let </span>lengths: Vec&lt;<span class="kw">_</span>&gt; = converted_fields.iter().map(|ty| ty.length()).collect();
+
+        <span class="macro">assert_eq!</span>(
+            lengths,
+            <span class="macro">vec!</span>[
+                <span class="prelude-val">None</span>,
+                <span class="prelude-val">None</span>,
+                <span class="prelude-val">None</span>,
+                <span class="prelude-val">None</span>,
+                <span class="prelude-val">Some</span>(<span class="macro">syn::parse_quote!</span>(<span class="number">10</span>)),
+                <span class="prelude-val">None</span>,
+                <span class="prelude-val">None</span>,
+                <span class="prelude-val">Some</span>(<span class="macro">syn::parse_quote!</span>(<span class="number">16</span>)),
             ]
         )
     }
@@ -2732,8 +2842,8 @@
         <span class="kw">let </span>when = Field::from(<span class="kw-2">&amp;</span>fields[<span class="number">0</span>]);
         <span class="macro">assert_eq!</span>(when.writer_snippet().to_string(),(<span class="macro">quote!</span>{
             {
-                <span class="kw">let </span>vals : Vec&lt;<span class="kw">_</span>&gt; = records.iter().map(|rec| (<span class="kw-2">&amp;</span>rec.unique_id.to_string()[..]).into() ).collect();
-                <span class="kw">if let </span>ColumnWriter::ByteArrayColumnWriter(<span class="kw-2">ref mut </span>typed) = column_writer.untyped() {
+                <span class="kw">let </span>vals : Vec&lt;<span class="kw">_</span>&gt; = records.iter().map(|rec| rec.unique_id.as_bytes().to_vec().into() ).collect();
+                <span class="kw">if let </span>ColumnWriter::FixedLenByteArrayColumnWriter(<span class="kw-2">ref mut </span>typed) = column_writer.untyped() {
                     typed.write_batch(<span class="kw-2">&amp;</span>vals[..], <span class="prelude-val">None</span>, <span class="prelude-val">None</span>) <span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
                     <span class="macro">panic!</span>(<span class="string">"Schema and struct disagree on type for {}" </span>, <span class="macro">stringify!</span>{ unique_id })
@@ -2753,7 +2863,7 @@
                     </span>}
                 }).collect();
 
-                <span class="kw">if let </span>ColumnWriter::ByteArrayColumnWriter(<span class="kw-2">ref mut </span>typed) = column_writer.untyped() {
+                <span class="kw">if let </span>ColumnWriter::FixedLenByteArrayColumnWriter(<span class="kw-2">ref mut </span>typed) = column_writer.untyped() {
                     typed.write_batch(<span class="kw-2">&amp;</span>vals[..], <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>definition_levels[..]), <span class="prelude-val">None</span>) <span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
                     <span class="macro">panic!</span>(<span class="string">"Schema and struct disagree on type for {}" </span>, <span class="macro">stringify!</span>{ maybe_unique_id })
@@ -2775,13 +2885,13 @@
         <span class="macro">assert_eq!</span>(when.reader_snippet().to_string(),(<span class="macro">quote!</span>{
             {
                 <span class="kw">let </span><span class="kw-2">mut </span>vals = Vec::new();
-                <span class="kw">if let </span>ColumnReader::ByteArrayColumnReader(<span class="kw-2">mut </span>typed) = column_reader {
+                <span class="kw">if let </span>ColumnReader::FixedLenByteArrayColumnReader(<span class="kw-2">mut </span>typed) = column_reader {
                     typed.read_records(num_records, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="kw-2">&amp;mut </span>vals)<span class="question-mark">?</span>;
                 } <span class="kw">else </span>{
                     <span class="macro">panic!</span>(<span class="string">"Schema and struct disagree on type for {}"</span>, <span class="macro">stringify!</span>{ unique_id });
                 }
                 <span class="kw">for </span>(i, r) <span class="kw">in </span><span class="kw-2">&amp;mut </span>records[..num_records].iter_mut().enumerate() {
-                    r.unique_id = ::uuid::Uuid::parse_str(vals[i].data().convert()).unwrap();
+                    r.unique_id = ::uuid::Uuid::from_bytes(vals[i].data().try_into().unwrap());
                 }
             }
         }).to_string());

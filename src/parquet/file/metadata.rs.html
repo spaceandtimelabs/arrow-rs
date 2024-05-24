@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `parquet/src/file/metadata.rs`."><title>metadata.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="parquet" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (87293c958 2024-05-08)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `parquet/src/file/metadata.rs`."><title>metadata.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="parquet" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (867900499 2024-05-23)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1217,6 +1217,28 @@
 <a href="#1217" id="1217">1217</a>
 <a href="#1218" id="1218">1218</a>
 <a href="#1219" id="1219">1219</a>
+<a href="#1220" id="1220">1220</a>
+<a href="#1221" id="1221">1221</a>
+<a href="#1222" id="1222">1222</a>
+<a href="#1223" id="1223">1223</a>
+<a href="#1224" id="1224">1224</a>
+<a href="#1225" id="1225">1225</a>
+<a href="#1226" id="1226">1226</a>
+<a href="#1227" id="1227">1227</a>
+<a href="#1228" id="1228">1228</a>
+<a href="#1229" id="1229">1229</a>
+<a href="#1230" id="1230">1230</a>
+<a href="#1231" id="1231">1231</a>
+<a href="#1232" id="1232">1232</a>
+<a href="#1233" id="1233">1233</a>
+<a href="#1234" id="1234">1234</a>
+<a href="#1235" id="1235">1235</a>
+<a href="#1236" id="1236">1236</a>
+<a href="#1237" id="1237">1237</a>
+<a href="#1238" id="1238">1238</a>
+<a href="#1239" id="1239">1239</a>
+<a href="#1240" id="1240">1240</a>
+<a href="#1241" id="1241">1241</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -1234,23 +1256,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-</span><span class="doccomment">//! Contains information about available Parquet metadata.
+</span><span class="doccomment">//! Parquet metadata structures
 //!
-//! The hierarchy of metadata is as follows:
+//! * [`ParquetMetaData`]: Top level metadata container, read from the Parquet
+//!   file footer.
 //!
-//! [`ParquetMetaData`](struct.ParquetMetaData.html) contains
-//! [`FileMetaData`](struct.FileMetaData.html) and zero or more
-//! [`RowGroupMetaData`](struct.RowGroupMetaData.html) for each row group.
+//! * [`FileMetaData`]: File level metadata such as schema, row counts and
+//!   version.
 //!
-//! [`FileMetaData`](struct.FileMetaData.html) includes file version, application specific
-//! metadata.
+//! * [`RowGroupMetaData`]: Metadata for each Row Group with a File, such as
+//!   location and number of rows, and column chunks.
 //!
-//! Each [`RowGroupMetaData`](struct.RowGroupMetaData.html) contains information about row
-//! group and one or more [`ColumnChunkMetaData`](struct.ColumnChunkMetaData.html) for
-//! each column chunk.
-//!
-//! [`ColumnChunkMetaData`](struct.ColumnChunkMetaData.html) has information about column
-//! chunk (primitive leaf column), including encoding/compression, number of values, etc.
+//! * [`ColumnChunkMetaData`]: Metadata for each column chunk (primitive leaf)
+//!   within a Row Group including encoding and compression information,
+//!   number of values, statistics, etc.
 
 </span><span class="kw">use </span>std::ops::Range;
 <span class="kw">use </span>std::sync::Arc;
@@ -1280,7 +1299,7 @@
 /// column in the third row group of the parquet file.
 </span><span class="kw">pub type </span>ParquetColumnIndex = Vec&lt;Vec&lt;Index&gt;&gt;;
 
-<span class="doccomment">/// [`PageLocation`] for each datapage of each row group of each column.
+<span class="doccomment">/// [`PageLocation`] for each data page of each row group of each column.
 ///
 /// `offset_index[row_group_number][column_number][page_number]` holds
 /// the [`PageLocation`] corresponding to page `page_number` of column
@@ -1291,14 +1310,30 @@
 /// parquet file.
 </span><span class="kw">pub type </span>ParquetOffsetIndex = Vec&lt;Vec&lt;Vec&lt;PageLocation&gt;&gt;&gt;;
 
-<span class="doccomment">/// Global Parquet metadata.
+<span class="doccomment">/// Global Parquet metadata, including [`FileMetaData`], [`RowGroupMetaData`].
+///
+/// This structure is stored in the footer of Parquet files, in the format
+/// defined by [`parquet.thrift`]. It contains:
+///
+/// * File level metadata: [`FileMetaData`]
+/// * Row Group level metadata: [`RowGroupMetaData`]
+/// * (Optional) "Page Index" structures: [`ParquetColumnIndex`] and [`ParquetOffsetIndex`]
+///
+/// [`parquet.thrift`]: https://github.com/apache/parquet-format/blob/master/src/main/thrift/parquet.thrift
+///
+/// This structure is read by the various readers in this crate or can be read
+/// directly from a file using the [`parse_metadata`] function.
+///
+/// [`parse_metadata`]: crate::file::footer::parse_metadata
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>ParquetMetaData {
-    file_metadata: FileMetaData,
-    row_groups: Vec&lt;RowGroupMetaData&gt;,
-    <span class="doccomment">/// Page index for all pages in each column chunk
+    <span class="doccomment">/// File level metadata
+    </span>file_metadata: FileMetaData,
+    <span class="doccomment">/// Row group metadata
+    </span>row_groups: Vec&lt;RowGroupMetaData&gt;,
+    <span class="doccomment">/// Page level index for each page in each column chunk
     </span>column_index: <span class="prelude-ty">Option</span>&lt;ParquetColumnIndex&gt;,
-    <span class="doccomment">/// Offset index for all pages in each column chunk
+    <span class="doccomment">/// Offset index for all each page in each column chunk
     </span>offset_index: <span class="prelude-ty">Option</span>&lt;ParquetOffsetIndex&gt;,
 }
 
@@ -1391,7 +1426,9 @@
 <span class="doccomment">/// Reference counted pointer for [`FileMetaData`].
 </span><span class="kw">pub type </span>FileMetaDataPtr = Arc&lt;FileMetaData&gt;;
 
-<span class="doccomment">/// Metadata for a Parquet file.
+<span class="doccomment">/// File level metadata for a Parquet file.
+///
+/// Includes the version of the file, metadata, number of rows, schema, and column orders
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>FileMetaData {
     version: i32,
@@ -1490,7 +1527,10 @@
 <span class="doccomment">/// Reference counted pointer for [`RowGroupMetaData`].
 </span><span class="kw">pub type </span>RowGroupMetaDataPtr = Arc&lt;RowGroupMetaData&gt;;
 
-<span class="doccomment">/// Metadata for a row group.
+<span class="doccomment">/// Metadata for a row group
+///
+/// Includes [`ColumnChunkMetaData`] for each column in the row group, the number of rows
+/// the total byte size of the row group, and the [`SchemaDescriptor`] for the row group.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq)]
 </span><span class="kw">pub struct </span>RowGroupMetaData {
     columns: Vec&lt;ColumnChunkMetaData&gt;,
@@ -1498,9 +1538,10 @@
     sorting_columns: <span class="prelude-ty">Option</span>&lt;Vec&lt;SortingColumn&gt;&gt;,
     total_byte_size: i64,
     schema_descr: SchemaDescPtr,
-    <span class="comment">// We can't infer from file offset of first column since there may empty columns in row group.
+    <span class="doccomment">/// We can't infer from file offset of first column since there may empty columns in row group.
     </span>file_offset: <span class="prelude-ty">Option</span>&lt;i64&gt;,
-    ordinal: <span class="prelude-ty">Option</span>&lt;i16&gt;,
+    <span class="doccomment">/// Ordinal position of this row group in file
+    </span>ordinal: <span class="prelude-ty">Option</span>&lt;i16&gt;,
 }
 
 <span class="kw">impl </span>RowGroupMetaData {
@@ -1554,7 +1595,10 @@
         <span class="self">self</span>.schema_descr.clone()
     }
 
-    <span class="doccomment">/// Returns ordinal of this row group in file
+    <span class="doccomment">/// Returns ordinal position of this row group in file.
+    ///
+    /// For example if this is the first row group in the file, this will return 0.
+    /// If this is the second row group in the file, this will return 1.
     </span><span class="attr">#[inline(always)]
     </span><span class="kw">pub fn </span>ordinal(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;i16&gt; {
         <span class="self">self</span>.ordinal

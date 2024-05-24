@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `arrow-cast/src/parse.rs`."><title>parse.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="arrow_cast" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (87293c958 2024-05-08)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `arrow-cast/src/parse.rs`."><title>parse.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="arrow_cast" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.0-nightly (867900499 2024-05-23)" data-channel="nightly" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2598,6 +2598,10 @@
 <a href="#2598" id="2598">2598</a>
 <a href="#2599" id="2599">2599</a>
 <a href="#2600" id="2600">2600</a>
+<a href="#2601" id="2601">2601</a>
+<a href="#2602" id="2602">2602</a>
+<a href="#2603" id="2603">2603</a>
+<a href="#2604" id="2604">2604</a>
 </pre></div><pre class="rust"><code><span class="comment">// Licensed to the Apache Software Foundation (ASF) under one
 // or more contributor license agreements.  See the NOTICE file
 // distributed with this work for additional information
@@ -3469,7 +3473,7 @@
                             <span class="string">"can't parse the string value {s} to decimal"
                         </span>)));
                     }
-                    <span class="kw">if </span>fractionals == scale {
+                    <span class="kw">if </span>fractionals == scale &amp;&amp; scale != <span class="number">0 </span>{
                         <span class="comment">// We have processed all the digits that we need. All that
                         // is left is to validate that the rest of the string contains
                         // valid digits.
@@ -5016,6 +5020,8 @@
             (<span class="string">"0.12e+6"</span>, <span class="string">"120000"</span>, <span class="number">10</span>),
             (<span class="string">"000000000001e0"</span>, <span class="string">"000000000001"</span>, <span class="number">3</span>),
             (<span class="string">"000001.1034567002e0"</span>, <span class="string">"000001.1034567002"</span>, <span class="number">3</span>),
+            (<span class="string">"1.234e16"</span>, <span class="string">"12340000000000000"</span>, <span class="number">0</span>),
+            (<span class="string">"123.4e16"</span>, <span class="string">"1234000000000000000"</span>, <span class="number">0</span>),
         ];
         <span class="kw">for </span>(e, d, scale) <span class="kw">in </span>e_notation_tests {
             <span class="kw">let </span>result_128_e = parse_decimal::&lt;Decimal128Type&gt;(e, <span class="number">20</span>, scale);
@@ -5054,17 +5060,19 @@
             );
         }
         <span class="kw">let </span>overflow_parse_tests = [
-            <span class="string">"12345678"</span>,
-            <span class="string">"1.2345678e7"</span>,
-            <span class="string">"12345678.9"</span>,
-            <span class="string">"1.23456789e+7"</span>,
-            <span class="string">"99999999.99"</span>,
-            <span class="string">"9.999999999e7"</span>,
-            <span class="string">"12345678908765.123456"</span>,
-            <span class="string">"123456789087651234.56e-4"</span>,
+            (<span class="string">"12345678"</span>, <span class="number">3</span>),
+            (<span class="string">"1.2345678e7"</span>, <span class="number">3</span>),
+            (<span class="string">"12345678.9"</span>, <span class="number">3</span>),
+            (<span class="string">"1.23456789e+7"</span>, <span class="number">3</span>),
+            (<span class="string">"99999999.99"</span>, <span class="number">3</span>),
+            (<span class="string">"9.999999999e7"</span>, <span class="number">3</span>),
+            (<span class="string">"12345678908765.123456"</span>, <span class="number">3</span>),
+            (<span class="string">"123456789087651234.56e-4"</span>, <span class="number">3</span>),
+            (<span class="string">"1234560000000"</span>, <span class="number">0</span>),
+            (<span class="string">"1.23456e12"</span>, <span class="number">0</span>),
         ];
-        <span class="kw">for </span>s <span class="kw">in </span>overflow_parse_tests {
-            <span class="kw">let </span>result_128 = parse_decimal::&lt;Decimal128Type&gt;(s, <span class="number">10</span>, <span class="number">3</span>);
+        <span class="kw">for </span>(s, scale) <span class="kw">in </span>overflow_parse_tests {
+            <span class="kw">let </span>result_128 = parse_decimal::&lt;Decimal128Type&gt;(s, <span class="number">10</span>, scale);
             <span class="kw">let </span>expected_128 = <span class="string">"Parser error: parse decimal overflow"</span>;
             <span class="kw">let </span>actual_128 = result_128.unwrap_err().to_string();
 
@@ -5073,7 +5081,7 @@
                 <span class="string">"actual: '{actual_128}', expected: '{expected_128}'"
             </span>);
 
-            <span class="kw">let </span>result_256 = parse_decimal::&lt;Decimal256Type&gt;(s, <span class="number">10</span>, <span class="number">3</span>);
+            <span class="kw">let </span>result_256 = parse_decimal::&lt;Decimal256Type&gt;(s, <span class="number">10</span>, scale);
             <span class="kw">let </span>expected_256 = <span class="string">"Parser error: parse decimal overflow"</span>;
             <span class="kw">let </span>actual_256 = result_256.unwrap_err().to_string();
 
